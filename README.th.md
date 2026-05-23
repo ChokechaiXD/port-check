@@ -1,8 +1,8 @@
 # 🔌 Port Checker
 
-See who's using your ports — kill them if you want
+ดูว่าใครใช้พอร์ตอะไรอยู่ — ฆ่าทิ้งได้ถ้ากวน
 
-**Free to use · MIT License**
+**ใช้งานฟรี · MIT License**
 
 ```
  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -20,38 +20,33 @@ See who's using your ports — kill them if you want
  └──────┴──────┴─────────────┴───────┴───────┴─────────┴───────┴──────────────────────────────────┘
 ```
 
-## Features
+## คุณสมบัติ
 
-- **Port List** — Shows all TCP & UDP listening ports
-- **Filter** — Type a port number to focus on one service
-- **Resources** — Real-time Memory (MB) and CPU % per process
-- **Path** — Know exactly which executable is listening
-- **Kill** — Select a row and kill the process instantly
-- **Auto-refresh** — Updates every 5 seconds, toggle on/off
-- **Sort** — Click any column header to sort
+- **รายการพอร์ต** — แสดงพอร์ต TCP และ UDP ทั้งหมดที่กำลังใช้งาน
+- **ค้นหา** — พิมพ์เลขพอร์ตเพื่อดูเฉพาะที่ต้องการ
+- **หน่วยความจำ** — ดูค่า RAM แบบ real-time ในคอลัมน์ Mem(MB)
+- **ซีพียู** — ดูค่า CPU % แบบ real-time
+- **ตำแหน่งไฟล์** — คอลัมน์ Path บอกว่า exe อยู่ที่ไหน
+- **ฆ่าโปรแกรม** — เลือกแถวแล้วกด Kill
+- **อัปเดตอัตโนมัติ** — ทุก 5 วินาที หรือปิดได้ที่ Auto 5s
+- **เรียงลำดับ** — คลิกหัวตารางเพื่อเรียงข้อมูล
 
-## Usage
+## วิธีใช้
 
 ```
 port-check.exe
 ```
 
-Just run it. No installation. No dependencies.
+เปิดเลย ไม่ต้องติดตั้งอะไรเพิ่ม
 
-## Build
+## สร้างจาก source
 
-Requires .NET Framework 4.8+ and csc.exe.
+ต้องมี .NET Framework 4.8+ และ csc.exe
 
 ```powershell
 csc.exe /target:winexe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Management.dll port-check.cs
 ```
 
----
-
-## 📖 ภาษาไทย
-
-[อ่านภาษาไทย → README.th.md](README.th.md)
-
 ## License
 
-MIT — Free to use, modify, and distribute. Full license in [LICENSE](LICENSE).
+MIT — ฟรี แก้ไข แจกจ่ายได้ ดูรายละเอียดใน [LICENSE](LICENSE)
