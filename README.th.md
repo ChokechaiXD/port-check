@@ -1,8 +1,17 @@
-# 🔌 Port Checker
+<div align="center">
+  <h1>🔌 Port Checker</h1>
+  <p><strong>ดูว่าใครใช้พอร์ตอะไรอยู่ — ฆ่าทิ้งได้ถ้ากวน</strong></p>
+  <br>
+  <p>
+    <img src="https://img.shields.io/badge/Windows-0078D4?style=flat-square&logo=windows11&logoColor=white">
+    <img src="https://img.shields.io/badge/.NET_Framework-512BD4?style=flat-square&logo=dotnet&logoColor=white">
+    <img src="https://img.shields.io/badge/C%23-239120?style=flat-square&logo=csharp&logoColor=white">
+    <img src="https://img.shields.io/github/license/ChokechaiXD/port-check?style=flat-square&color=blue">
+    <img src="https://img.shields.io/badge/ฟรี-00B4D8?style=flat-square">
+  </p>
+</div>
 
-ดูว่าใครใช้พอร์ตอะไรอยู่ — ฆ่าทิ้งได้ถ้ากวน
-
-**ใช้งานฟรี · MIT License**
+<br>
 
 ```
  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -20,33 +29,60 @@
  └──────┴──────┴─────────────┴───────┴───────┴─────────┴───────┴──────────────────────────────────┘
 ```
 
-## คุณสมบัติ
+<br>
 
-- **รายการพอร์ต** — แสดงพอร์ต TCP และ UDP ทั้งหมดที่กำลังใช้งาน
-- **ค้นหา** — พิมพ์เลขพอร์ตเพื่อดูเฉพาะที่ต้องการ
-- **หน่วยความจำ** — ดูค่า RAM แบบ real-time ในคอลัมน์ Mem(MB)
-- **ซีพียู** — ดูค่า CPU % แบบ real-time
-- **ตำแหน่งไฟล์** — คอลัมน์ Path บอกว่า exe อยู่ที่ไหน
-- **ฆ่าโปรแกรม** — เลือกแถวแล้วกด Kill
-- **อัปเดตอัตโนมัติ** — ทุก 5 วินาที หรือปิดได้ที่ Auto 5s
-- **เรียงลำดับ** — คลิกหัวตารางเพื่อเรียงข้อมูล
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="160"><b>📋 รายการพอร์ต</b><br><small>TCP & UDP</small></td>
+      <td align="center" width="160"><b>🔍 ค้นหา</b><br><small>ตามเลขพอร์ต</small></td>
+      <td align="center" width="160"><b>📊 ทรัพยากร</b><br><small>RAM & CPU %</small></td>
+      <td align="center" width="160"><b>📍 ตำแหน่ง</b><br><small>ที่อยู่ไฟล์ exe</small></td>
+    </tr>
+    <tr>
+      <td align="center" width="160"><b>💀 ฆ่า</b><br><small>คลิกเดียว</small></td>
+      <td align="center" width="160"><b>🔄 อัตโนมัติ</b><br><small>ทุก 5 วินาที</small></td>
+      <td align="center" width="160"><b>↕️ เรียงลำดับ</b><br><small>ทุกคอลัมน์</small></td>
+      <td align="center" width="160"><b>⚖️ พกพา</b><br><small>ไฟล์ .exe เดียว</small></td>
+    </tr>
+  </table>
+</div>
 
-## วิธีใช้
+<br>
 
-```
+---
+
+## 🚀 เริ่มต้นใช้งาน
+
+```powershell
+# ดาวน์โหลด port-check.exe แล้วเปิด
 port-check.exe
 ```
 
-เปิดเลย ไม่ต้องติดตั้งอะไรเพิ่ม
+ไม่ต้องติดตั้งอะไร เพิ่มแค่เปิดใช้
 
-## สร้างจาก source
+---
 
-ต้องมี .NET Framework 4.8+ และ csc.exe
+## 🛠️ สร้างจาก source
+
+ต้องมี .NET Framework 4.8+
 
 ```powershell
-csc.exe /target:winexe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Management.dll port-check.cs
+csc.exe /target:winexe `
+  /reference:System.Windows.Forms.dll `
+  /reference:System.Drawing.dll `
+  /reference:System.Management.dll `
+  port-check.cs
 ```
 
-## License
+---
 
-MIT — ฟรี แก้ไข แจกจ่ายได้ ดูรายละเอียดใน [LICENSE](LICENSE)
+## 📖 ภาษาอื่น
+
+- [English — Read in English](README.md)
+
+---
+
+<div align="center">
+  <small>MIT License · ฟรี · สร้างด้วย C# WinForms</small>
+</div>

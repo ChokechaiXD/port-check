@@ -1,8 +1,17 @@
-# 🔌 Port Checker
+<div align="center">
+  <h1>🔌 Port Checker</h1>
+  <p><strong>See who's using your ports — kill them if you want</strong></p>
+  <br>
+  <p>
+    <img src="https://img.shields.io/badge/Windows-0078D4?style=flat-square&logo=windows11&logoColor=white">
+    <img src="https://img.shields.io/badge/.NET_Framework-512BD4?style=flat-square&logo=dotnet&logoColor=white">
+    <img src="https://img.shields.io/badge/C%23-239120?style=flat-square&logo=csharp&logoColor=white">
+    <img src="https://img.shields.io/github/license/ChokechaiXD/port-check?style=flat-square&color=blue">
+    <img src="https://img.shields.io/badge/Free-00B4D8?style=flat-square">
+  </p>
+</div>
 
-See who's using your ports — kill them if you want
-
-**Free to use · MIT License**
+<br>
 
 ```
  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -20,38 +29,60 @@ See who's using your ports — kill them if you want
  └──────┴──────┴─────────────┴───────┴───────┴─────────┴───────┴──────────────────────────────────┘
 ```
 
-## Features
+<br>
 
-- **Port List** — Shows all TCP & UDP listening ports
-- **Filter** — Type a port number to focus on one service
-- **Resources** — Real-time Memory (MB) and CPU % per process
-- **Path** — Know exactly which executable is listening
-- **Kill** — Select a row and kill the process instantly
-- **Auto-refresh** — Updates every 5 seconds, toggle on/off
-- **Sort** — Click any column header to sort
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="160"><b>📋 Port List</b><br><small>TCP & UDP</small></td>
+      <td align="center" width="160"><b>🔍 Filter</b><br><small>By port number</small></td>
+      <td align="center" width="160"><b>📊 Resources</b><br><small>RAM & CPU %</small></td>
+      <td align="center" width="160"><b>📍 Path</b><br><small>Exe location</small></td>
+    </tr>
+    <tr>
+      <td align="center" width="160"><b>💀 Kill</b><br><small>One-click</small></td>
+      <td align="center" width="160"><b>🔄 Auto-refresh</b><br><small>Every 5s</small></td>
+      <td align="center" width="160"><b>↕️ Sort</b><br><small>Any column</small></td>
+      <td align="center" width="160"><b>⚡ Portable</b><br><small>Single .exe</small></td>
+    </tr>
+  </table>
+</div>
 
-## Usage
+<br>
 
-```
+---
+
+## 🚀 Quick start
+
+```powershell
+# Download port-check.exe and run
 port-check.exe
 ```
 
-Just run it. No installation. No dependencies.
+No installation. No dependencies. Just works.
 
-## Build
+---
 
-Requires .NET Framework 4.8+ and csc.exe.
+## 🛠️ Build from source
+
+Requires .NET Framework 4.8+.
 
 ```powershell
-csc.exe /target:winexe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Management.dll port-check.cs
+csc.exe /target:winexe `
+  /reference:System.Windows.Forms.dll `
+  /reference:System.Drawing.dll `
+  /reference:System.Management.dll `
+  port-check.cs
 ```
 
 ---
 
-## 📖 ภาษาไทย
+## 📖 Languages
 
-[อ่านภาษาไทย → README.th.md](README.th.md)
+- [ไทย — อ่านภาษาไทย](README.th.md)
 
-## License
+---
 
-MIT — Free to use, modify, and distribute. Full license in [LICENSE](LICENSE).
+<div align="center">
+  <small>MIT Licensed · Free to use · Built with C# WinForms</small>
+</div>
