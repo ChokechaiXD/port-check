@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Management;
 using System.Text;
 using System.Windows.Forms;
 
@@ -29,17 +28,23 @@ namespace PortChecker
         public string RemoteAddress;
     }
 
+    struct CpuSample
+    {
+        public TimeSpan TotalTime;
+        public DateTime Time;
+    }
+
     class App : Form
     {
         DataGridView table = new DataGridView();
         TextBox portFilter = new TextBox();
         TextBox nameFilter = new TextBox();
-        Button killButton = new Button();
         Label statusBar = new Label();
         CheckBox autoRefresh = new CheckBox();
         Timer refreshTimer = new Timer();
 
-        Dictionary<int, Process> processCache = new Dictionary<int, Process>();
+        Dictionary<int, CpuSample> cpuHistory = new Dictionary<int, CpuSample>();
+        Dictionary<int, string> nameCache = new Dictionary<int, string>();
         string settingsPath;
 
         public App(string[] args)
@@ -92,7 +97,7 @@ namespace PortChecker
             var refreshButton = new Button { Text = "Refresh", Location = new Point(250, 6), Size = new Size(80, 25) };
             refreshButton.Click += (senderB, argsB) => RefreshData();
 
-            killButton.Text = "Kill"; killButton.Location = new Point(340, 6); killButton.Size = new Size(70, 25);
+            var killButton = new Button { Text = "Kill", Location = new Point(340, 6), Size = new Size(70, 25) };
             killButton.BackColor = Color.IndianRed; killButton.ForeColor = Color.White;
             killButton.Click += (senderK, argsK) => KillSelected();
 
@@ -285,13 +290,15 @@ namespace PortChecker
         void RefreshData()
         {
             var connections = FetchConnections();
-            var cpuData = FetchCpuData();
+            var processCache = new Dictionary<int, Process>();
             var currentKeys = new HashSet<string>();
             var existing = new Dictionary<string, int>();
 
             for (int i = 0; i < table.Rows.Count; i++)
                 if (table.Rows[i].Cells["Port"].Value != null)
                     existing[RowKey(table.Rows[i])] = i;
+
+            bool pathVisible = table.Columns["Path"].Visible;
 
             int filterPort;
             int.TryParse(portFilter.Text, out filterPort);
@@ -311,7 +318,7 @@ namespace PortChecker
                 currentKeys.Add(key);
 
                 Process process;
-                if (!processCache.TryGetValue(conn.Pid, out process) || process == null)
+                if (!processCache.TryGetValue(conn.Pid, out process))
                 {
                     try { process = Process.GetProcessById(conn.Pid); }
                     catch { process = null; }
@@ -337,12 +344,16 @@ namespace PortChecker
                     }
                     catch { }
 
-                    float cpuPercent;
-                    if (cpuData.TryGetValue(conn.Pid, out cpuPercent))
-                        cpuValue = Math.Round(cpuPercent, 1);
+                    double? cpuPct = GetCpuUsage(conn.Pid, process);
+                    if (cpuPct.HasValue)
+                        cpuValue = cpuPct.Value;
 
-                    try { procPath = process.MainModule.FileName; }
-                    catch { }
+                    if (pathVisible)
+                    {
+                        try { procPath = process.MainModule.FileName; }
+                        catch { }
+                    }
+
                     processIds.Add(conn.Pid);
                 }
                 else if (hasNameFilter)
@@ -384,29 +395,27 @@ namespace PortChecker
             return row.Cells["Port"].Value + ":" + row.Cells["PID"].Value + ":" + row.Cells["Proto"].Value;
         }
 
-        static Dictionary<int, float> FetchCpuData()
+        double? GetCpuUsage(int pid, Process process)
         {
-            var result = new Dictionary<int, float>();
             try
             {
-                string wql = "SELECT IDProcess, PercentProcessorTime FROM Win32_PerfFormattedData_PerfProc_Process";
-                using (var searcher = new ManagementObjectSearcher(wql))
-                using (var items = searcher.Get())
+                DateTime now = DateTime.UtcNow;
+                TimeSpan total = process.TotalProcessorTime;
+                CpuSample prev;
+                if (cpuHistory.TryGetValue(pid, out prev))
                 {
-                    foreach (ManagementBaseObject item in items)
+                    double elapsedSec = (now - prev.Time).TotalSeconds;
+                    double usedSec = (total - prev.TotalTime).TotalSeconds;
+                    if (elapsedSec > 0.001)
                     {
-                        try
-                        {
-                            int pid = Convert.ToInt32(item["IDProcess"]);
-                            float pct = Convert.ToSingle(item["PercentProcessorTime"]) / Environment.ProcessorCount;
-                            result[pid] = pct;
-                        }
-                        catch { }
+                        cpuHistory[pid] = new CpuSample { TotalTime = total, Time = now };
+                        return Math.Round(usedSec / elapsedSec / Environment.ProcessorCount * 100, 1);
                     }
                 }
+                cpuHistory[pid] = new CpuSample { TotalTime = total, Time = now };
             }
             catch { }
-            return result;
+            return null;
         }
 
         static List<Connection> FetchConnections()
