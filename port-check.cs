@@ -43,9 +43,11 @@ namespace PortChecker
         CheckBox autoRefresh = new CheckBox();
         Timer refreshTimer = new Timer();
 
+        List<object[]> data = new List<object[]>();
         Dictionary<int, CpuSample> cpuHistory = new Dictionary<int, CpuSample>();
-        Dictionary<int, string> nameCache = new Dictionary<int, string>();
         string settingsPath;
+        int sortCol = -1;
+        bool sortDesc;
 
         public App(string[] args)
         {
@@ -64,7 +66,7 @@ namespace PortChecker
             }
 
             refreshTimer.Interval = 5000;
-            refreshTimer.Tick += (senderT, argsT) => { if (autoRefresh.Checked) RefreshData(); };
+            refreshTimer.Tick += (_, __) => { if (autoRefresh.Checked) RefreshData(); };
             refreshTimer.Start();
 
             RefreshData();
@@ -82,24 +84,18 @@ namespace PortChecker
 
             var portLabel = new Label { Text = "Port:", Location = new Point(5, 10), Size = new Size(30, 20) };
             portFilter.Location = new Point(34, 8); portFilter.Size = new Size(60, 22);
-            portFilter.KeyDown += (senderK, eK) =>
-            {
-                if (eK.KeyCode == Keys.Enter) { RefreshData(); eK.SuppressKeyPress = true; }
-            };
+            portFilter.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) { RefreshData(); e.SuppressKeyPress = true; } };
 
             var nameLabel = new Label { Text = "Name:", Location = new Point(100, 10), Size = new Size(38, 20) };
             nameFilter.Location = new Point(138, 8); nameFilter.Size = new Size(100, 22);
-            nameFilter.KeyDown += (senderK, eK) =>
-            {
-                if (eK.KeyCode == Keys.Enter) { RefreshData(); eK.SuppressKeyPress = true; }
-            };
+            nameFilter.KeyDown += (_, e) => { if (e.KeyCode == Keys.Enter) { RefreshData(); e.SuppressKeyPress = true; } };
 
             var refreshButton = new Button { Text = "Refresh", Location = new Point(250, 6), Size = new Size(80, 25) };
-            refreshButton.Click += (senderB, argsB) => RefreshData();
+            refreshButton.Click += (_, __) => RefreshData();
 
             var killButton = new Button { Text = "Kill", Location = new Point(340, 6), Size = new Size(70, 25) };
             killButton.BackColor = Color.IndianRed; killButton.ForeColor = Color.White;
-            killButton.Click += (senderK, argsK) => KillSelected();
+            killButton.Click += (_, __) => KillSelected();
 
             autoRefresh.Text = "Auto 5s"; autoRefresh.Location = new Point(430, 8); autoRefresh.Size = new Size(80, 20);
             autoRefresh.Checked = true;
@@ -149,62 +145,91 @@ namespace PortChecker
             table.Columns["State"].Width = 60; table.Columns["Remote"].Width = 130;
             table.Columns["MemMB"].Width = 75; table.Columns["CpuPct"].Width = 60;
 
-            table.CellFormatting += (senderF, eF) =>
+            // Virtual Mode = no cell objects for off-screen rows
+            table.VirtualMode = true;
+            table.CellValueNeeded += (_, e) =>
             {
-                if (eF.Value == null) { eF.Value = "-"; eF.FormattingApplied = true; return; }
-                if ((eF.ColumnIndex == 6 || eF.ColumnIndex == 7) && eF.Value is double)
+                if (e.RowIndex >= 0 && e.RowIndex < data.Count)
+                    e.Value = data[e.RowIndex][e.ColumnIndex];
+            };
+
+            table.CellFormatting += (_, e) =>
+            {
+                if (e.Value == null) { e.Value = "-"; e.FormattingApplied = true; return; }
+                if ((e.ColumnIndex == 6 || e.ColumnIndex == 7) && e.Value is double)
                 {
-                    double d = (double)eF.Value;
-                    eF.Value = d.ToString("F1");
-                    eF.FormattingApplied = true;
+                    e.Value = ((double)e.Value).ToString("F1");
+                    e.FormattingApplied = true;
                 }
             };
 
             var ctxMenu = new ContextMenuStrip();
-            ctxMenu.Items.Add("Kill", null, (senderC, argsC) => KillSelected());
+            ctxMenu.Items.Add("Kill", null, (_, __) => KillSelected());
             ctxMenu.Items.Add("-");
-            ctxMenu.Items.Add("Copy Port", null, (senderC, argsC) => CopyCell("Port"));
-            ctxMenu.Items.Add("Copy PID", null, (senderC, argsC) => CopyCell("PID"));
-            ctxMenu.Items.Add("Copy Name", null, (senderC, argsC) => CopyCell("Name"));
-            ctxMenu.Items.Add("Copy Remote", null, (senderC, argsC) => CopyCell("Remote"));
-            ctxMenu.Items.Add("Copy Path", null, (senderC, argsC) => CopyCell("Path"));
+            ctxMenu.Items.Add("Copy Port", null, (_, __) => CopyCell(0));
+            ctxMenu.Items.Add("Copy PID", null, (_, __) => CopyCell(1));
+            ctxMenu.Items.Add("Copy Name", null, (_, __) => CopyCell(2));
+            ctxMenu.Items.Add("Copy Remote", null, (_, __) => CopyCell(5));
+            ctxMenu.Items.Add("Copy Path", null, (_, __) => CopyCell(8));
             ctxMenu.Items.Add("-");
-            ctxMenu.Items.Add("Copy Row", null, (senderC, argsC) => CopyRow());
+            ctxMenu.Items.Add("Copy Row", null, (_, __) => CopyRow());
             table.ContextMenuStrip = ctxMenu;
 
-            table.KeyDown += (senderK, eK) =>
+            table.KeyDown += (_, e) =>
             {
-                if (eK.KeyCode == Keys.Delete || eK.KeyCode == Keys.K) KillSelected();
-                if (eK.Control && eK.KeyCode == Keys.C) CopyRow();
+                if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.K) KillSelected();
+                if (e.Control && e.KeyCode == Keys.C) CopyRow();
             };
-            table.CellMouseDoubleClick += (senderD, eD) => { if (eD.RowIndex >= 0) KillSelected(); };
+            table.CellMouseDoubleClick += (_, e) => { if (e.RowIndex >= 0) KillSelected(); };
 
-            table.ColumnHeaderMouseClick += (senderH, eH) =>
+            table.ColumnHeaderMouseClick += (_, e) =>
             {
-                if (eH.Button != MouseButtons.Right) return;
-                var menu = new ContextMenuStrip();
-                foreach (DataGridViewColumn col in table.Columns)
+                if (e.Button == MouseButtons.Right)
                 {
-                    string colText = col.HeaderText;
-                    bool colVisible = col.Visible;
-                    var item = new ToolStripMenuItem(colText) { Checked = colVisible };
-                    item.Click += (senderI, argsI) => col.Visible = !col.Visible;
-                    menu.Items.Add(item);
+                    var menu = new ContextMenuStrip();
+                    foreach (DataGridViewColumn col in table.Columns)
+                    {
+                        var item = new ToolStripMenuItem(col.HeaderText) { Checked = col.Visible };
+                        item.Click += (__, ___) => col.Visible = !col.Visible;
+                        menu.Items.Add(item);
+                    }
+                    menu.Show(table, e.Location);
                 }
-                menu.Show(table, eH.Location);
+                else if (e.Button == MouseButtons.Left && data.Count > 0)
+                {
+                    if (sortCol == e.ColumnIndex)
+                        sortDesc = !sortDesc;
+                    else { sortCol = e.ColumnIndex; sortDesc = false; }
+                    data.Sort((a, b) =>
+                    {
+                        int c = CompareObj(a[sortCol], b[sortCol]);
+                        return sortDesc ? -c : c;
+                    });
+                    table.Refresh();
+                }
             };
 
             Controls.Add(toolbar);
             Controls.Add(table);
         }
 
+        static int CompareObj(object a, object b)
+        {
+            if (a == null && b == null) return 0;
+            if (a == null) return -1;
+            if (b == null) return 1;
+            if (a is int && b is int) return ((int)a).CompareTo((int)b);
+            if (a is double && b is double) return ((double)a).CompareTo((double)b);
+            return string.Compare(a.ToString(), b.ToString(), StringComparison.OrdinalIgnoreCase);
+        }
+
         void SaveSettings()
         {
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
-                File.WriteAllLines(settingsPath, new string[]
-                {
+                var dir = Path.GetDirectoryName(settingsPath);
+                Directory.CreateDirectory(dir);
+                File.WriteAllLines(settingsPath, new string[] {
                     "Port=" + portFilter.Text,
                     "Name=" + nameFilter.Text,
                     "Width=" + Width,
@@ -221,15 +246,15 @@ namespace PortChecker
                 if (!File.Exists(settingsPath)) return;
                 foreach (var line in File.ReadAllLines(settingsPath))
                 {
-                    var parts = line.Split('=');
-                    if (parts.Length != 2) continue;
-                    if (parts[0] == "Port") { portFilter.Text = parts[1]; continue; }
-                    if (parts[0] == "Name") { nameFilter.Text = parts[1]; continue; }
+                    var p = line.Split('=');
+                    if (p.Length != 2) continue;
+                    if (p[0] == "Port") { portFilter.Text = p[1]; continue; }
+                    if (p[0] == "Name") { nameFilter.Text = p[1]; continue; }
                     int v;
-                    if (int.TryParse(parts[1], out v))
+                    if (int.TryParse(p[1], out v))
                     {
-                        if (parts[0] == "Width") Width = Math.Max(800, v);
-                        if (parts[0] == "Height") Height = Math.Max(400, v);
+                        if (p[0] == "Width") Width = Math.Max(800, v);
+                        if (p[0] == "Height") Height = Math.Max(400, v);
                     }
                 }
             }
@@ -244,155 +269,105 @@ namespace PortChecker
 
         void KillSelected()
         {
-            if (table.SelectedRows.Count == 0)
-            { statusBar.Text = "Select a process first."; return; }
-
-            var row = table.SelectedRows[0];
-            int pid = (int)row.Cells["PID"].Value;
-            string name = (string)row.Cells["Name"].Value;
-            int port = (int)row.Cells["Port"].Value;
-
+            if (table.SelectedRows.Count == 0) { statusBar.Text = "Select a process first."; return; }
+            int rowIdx = table.SelectedRows[0].Index;
+            if (rowIdx < 0 || rowIdx >= data.Count) return;
+            object[] row = data[rowIdx];
+            int pid = (int)row[1];
+            string name = (string)row[2];
+            int port = (int)row[0];
             string msg = "Kill " + name + " (PID:" + pid + ") on port " + port + "?";
             if (MessageBox.Show(msg, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
-            try
-            {
-                Process.GetProcessById(pid).Kill();
-                statusBar.Text = "Killed " + name;
-                RefreshData();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            try { Process.GetProcessById(pid).Kill(); statusBar.Text = "Killed " + name; RefreshData(); }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
-        void CopyCell(string columnName)
+        void CopyCell(int col)
         {
             if (table.SelectedRows.Count == 0) return;
-            var val = table.SelectedRows[0].Cells[columnName].Value;
-            if (val != null) Clipboard.SetText(val.ToString());
+            int i = table.SelectedRows[0].Index;
+            if (i >= 0 && i < data.Count)
+            {
+                object v = data[i][col];
+                Clipboard.SetText(v != null ? v.ToString() : "-");
+            }
         }
 
         void CopyRow()
         {
             if (table.SelectedRows.Count == 0) return;
-            var row = table.SelectedRows[0];
+            int i = table.SelectedRows[0].Index;
+            if (i < 0 || i >= data.Count) return;
             var sb = new StringBuilder();
-            foreach (DataGridViewCell cell in row.Cells)
-            {
-                object val = cell.Value;
-                sb.Append(val != null ? val.ToString() : "-").Append("\t");
-            }
+            foreach (object v in data[i])
+                sb.Append(v != null ? v.ToString() : "-").Append("\t");
             Clipboard.SetText(sb.ToString().TrimEnd('\t'));
         }
 
         void RefreshData()
         {
             var connections = FetchConnections();
-            var processCache = new Dictionary<int, Process>();
-            var currentKeys = new HashSet<string>();
-            var existing = new Dictionary<string, int>();
+            var procCache = new Dictionary<int, Process>();
+            bool pathVis = table.Columns["Path"].Visible;
 
-            for (int i = 0; i < table.Rows.Count; i++)
-                if (table.Rows[i].Cells["Port"].Value != null)
-                    existing[RowKey(table.Rows[i])] = i;
+            int fp;
+            int.TryParse(portFilter.Text, out fp);
+            bool filtPort = portFilter.Text.Length > 0;
+            string filtName = nameFilter.Text.Trim().ToLowerInvariant();
+            bool filtNameOn = filtName.Length > 0;
 
-            bool pathVisible = table.Columns["Path"].Visible;
+            var newData = new List<object[]>();
+            int connCount = 0;
+            double totalMem = 0;
+            var pids = new HashSet<int>();
 
-            int filterPort;
-            int.TryParse(portFilter.Text, out filterPort);
-            bool hasPortFilter = portFilter.Text.Length > 0;
-            string filterName = nameFilter.Text.Trim().ToLowerInvariant();
-            bool hasNameFilter = filterName.Length > 0;
-
-            int connectionCount = 0;
-            double totalMemoryMb = 0;
-            var processIds = new HashSet<int>();
-
-            foreach (var conn in connections)
+            foreach (var c in connections)
             {
-                if (hasPortFilter && conn.Port != filterPort) continue;
+                if (filtPort && c.Port != fp) continue;
 
-                string key = conn.Port + ":" + conn.Pid + ":" + conn.Protocol;
-                currentKeys.Add(key);
-
-                Process process;
-                if (!processCache.TryGetValue(conn.Pid, out process))
+                Process proc;
+                if (!procCache.TryGetValue(c.Pid, out proc))
                 {
-                    try { process = Process.GetProcessById(conn.Pid); }
-                    catch { process = null; }
-                    processCache[conn.Pid] = process;
+                    try { proc = Process.GetProcessById(c.Pid); } catch { proc = null; }
+                    procCache[c.Pid] = proc;
                 }
 
-                string procName = "-";
-                object memValue = null;
-                object cpuValue = null;
-                string procPath = "-";
+                string nm = "-";
+                object mem = null;
+                object cpu = null;
+                string path = "-";
 
-                if (process != null)
+                if (proc != null)
                 {
-                    procName = process.ProcessName;
-                    if (hasNameFilter && !process.ProcessName.ToLowerInvariant().Contains(filterName))
-                    { currentKeys.Remove(key); continue; }
+                    nm = proc.ProcessName;
+                    if (filtNameOn && !proc.ProcessName.ToLowerInvariant().Contains(filtName)) continue;
 
-                    try
-                    {
-                        double mb = process.WorkingSet64 / 1048576.0;
-                        memValue = Math.Round(mb, 1);
-                        totalMemoryMb += mb;
-                    }
-                    catch { }
-
-                    double? cpuPct = GetCpuUsage(conn.Pid, process);
-                    if (cpuPct.HasValue)
-                        cpuValue = cpuPct.Value;
-
-                    if (pathVisible)
-                    {
-                        try { procPath = process.MainModule.FileName; }
-                        catch { }
-                    }
-
-                    processIds.Add(conn.Pid);
+                    try { double mb = proc.WorkingSet64 / 1048576.0; mem = Math.Round(mb, 1); totalMem += mb; } catch { }
+                    double? cpuPct = GetCpuUsage(c.Pid, proc);
+                    if (cpuPct.HasValue) cpu = cpuPct.Value;
+                    if (pathVis) { try { path = proc.MainModule.FileName; } catch { } }
+                    pids.Add(c.Pid);
                 }
-                else if (hasNameFilter)
-                { currentKeys.Remove(key); continue; }
+                else if (filtNameOn) continue;
 
-                connectionCount++;
-
-                int rowIndex;
-                if (existing.TryGetValue(key, out rowIndex))
-                {
-                    var row = table.Rows[rowIndex];
-                    row.Cells["Name"].Value = procName;
-                    row.Cells["State"].Value = conn.State;
-                    row.Cells["Remote"].Value = conn.RemoteAddress;
-                    row.Cells["MemMB"].Value = memValue;
-                    row.Cells["CpuPct"].Value = cpuValue;
-                    row.Cells["Path"].Value = procPath;
-                }
-                else
-                {
-                    table.Rows.Add(conn.Port, conn.Pid, procName, conn.Protocol,
-                                   conn.State, conn.RemoteAddress, memValue, cpuValue, procPath);
-                }
+                connCount++;
+                newData.Add(new object[] { c.Port, c.Pid, nm, c.Protocol, c.State, c.RemoteAddress, mem, cpu, path });
             }
 
-            for (int i = table.Rows.Count - 1; i >= 0; i--)
-                if (table.Rows[i].Cells["Port"].Value != null
-                    && !currentKeys.Contains(RowKey(table.Rows[i])))
-                    table.Rows.RemoveAt(i);
+            // Dispose process handles
+            foreach (var p in procCache.Values)
+                if (p != null) p.Dispose();
 
-            statusBar.Text = connectionCount + " connections  |  "
-                + processIds.Count + " processes  |  "
-                + (int)totalMemoryMb + " MB  |  "
+            data = newData;
+            sortCol = -1;
+            table.RowCount = data.Count;
+            table.Refresh();
+
+            statusBar.Text = connCount + " connections  |  "
+                + pids.Count + " processes  |  "
+                + (int)totalMem + " MB  |  "
                 + DateTime.Now.ToString("HH:mm:ss");
-        }
-
-        string RowKey(DataGridViewRow row)
-        {
-            return row.Cells["Port"].Value + ":" + row.Cells["PID"].Value + ":" + row.Cells["Proto"].Value;
         }
 
         double? GetCpuUsage(int pid, Process process)
@@ -404,12 +379,12 @@ namespace PortChecker
                 CpuSample prev;
                 if (cpuHistory.TryGetValue(pid, out prev))
                 {
-                    double elapsedSec = (now - prev.Time).TotalSeconds;
-                    double usedSec = (total - prev.TotalTime).TotalSeconds;
-                    if (elapsedSec > 0.001)
+                    double elapsed = (now - prev.Time).TotalSeconds;
+                    double used = (total - prev.TotalTime).TotalSeconds;
+                    if (elapsed > 0.001)
                     {
                         cpuHistory[pid] = new CpuSample { TotalTime = total, Time = now };
-                        return Math.Round(usedSec / elapsedSec / Environment.ProcessorCount * 100, 1);
+                        return Math.Round(used / elapsed / Environment.ProcessorCount * 100, 1);
                     }
                 }
                 cpuHistory[pid] = new CpuSample { TotalTime = total, Time = now };
@@ -420,7 +395,7 @@ namespace PortChecker
 
         static List<Connection> FetchConnections()
         {
-            var result = new List<Connection>();
+            var r = new List<Connection>();
             try
             {
                 var psi = new ProcessStartInfo("netstat", "-ano")
@@ -430,57 +405,31 @@ namespace PortChecker
                     CreateNoWindow = true,
                     StandardOutputEncoding = Encoding.UTF8
                 };
-                using (var proc = Process.Start(psi))
+                using (var p = Process.Start(psi))
                 {
-                    string output = proc.StandardOutput.ReadToEnd();
-                    proc.WaitForExit();
-
-                    foreach (var rawLine in output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                    string o = p.StandardOutput.ReadToEnd();
+                    p.WaitForExit();
+                    foreach (var raw in o.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
                     {
-                        string line = rawLine.Trim().ToLowerInvariant();
-                        if (!line.StartsWith("tcp") && !line.StartsWith("udp")) continue;
-
-                        var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        string t = raw.Trim().ToLowerInvariant();
+                        if (!t.StartsWith("tcp") && !t.StartsWith("udp")) continue;
+                        var parts = t.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         if (parts.Length < 4) continue;
-
-                        string protocol = parts[0].ToUpper();
-                        string localAddr = parts[1];
-                        string remoteAddr = parts[2];
+                        string proto = parts[0].ToUpper();
+                        string local = parts[1], remote = parts[2];
                         string state = "";
                         int pid = 0;
-
-                        if (protocol == "TCP")
-                        {
-                            state = parts[3].ToUpper();
-                            int.TryParse(parts[parts.Length - 1], out pid);
-                        }
-                        else
-                        {
-                            state = "UDP";
-                            int.TryParse(parts[parts.Length - 1], out pid);
-                        }
-
-                        int colonIdx = localAddr.LastIndexOf(':');
+                        if (proto == "TCP") { state = parts[3].ToUpper(); int.TryParse(parts[parts.Length - 1], out pid); }
+                        else { state = "UDP"; int.TryParse(parts[parts.Length - 1], out pid); }
                         int port;
-                        int.TryParse(localAddr.Substring(colonIdx + 1), out port);
-
+                        int.TryParse(local.Substring(local.LastIndexOf(':') + 1), out port);
                         if (port > 0 && pid > 0)
-                            result.Add(new Connection
-                            {
-                                Port = port,
-                                Pid = pid,
-                                State = state,
-                                Protocol = protocol,
-                                RemoteAddress = remoteAddr.ToUpper()
-                            });
+                            r.Add(new Connection { Port = port, Pid = pid, State = state, Protocol = proto, RemoteAddress = remote.ToUpper() });
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("netstat error: " + ex.Message);
-            }
-            return result;
+            catch (Exception ex) { Debug.WriteLine("netstat: " + ex.Message); }
+            return r;
         }
     }
 }
