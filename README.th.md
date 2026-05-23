@@ -6,7 +6,7 @@
   <br>
   <p>
     <a href="https://github.com/ChokechaiXD/port-check/releases">
-      <img src="https://img.shields.io/github/v/release/ChokechaiXD/port-check?style=flat-square&label=version&color=2563eb" alt="version">
+      <img src="https://img.shields.io/badge/version-1.0-2563eb?style=flat-square" alt="version">
     </a>
     <a href="https://github.com/ChokechaiXD/port-check/releases">
       <img src="https://img.shields.io/github/downloads/ChokechaiXD/port-check/total?style=flat-square&color=00B4D8" alt="downloads">
