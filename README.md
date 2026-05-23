@@ -3,7 +3,7 @@
 See who's using your ports — kill them if you want  
 ดูว่าใครใช้พอร์ตอะไรอยู่ — ฆ่าทิ้งได้ถ้ากวน
 
-**ใช้งานฟรี ไม่มีค่าใช้จ่าย | Free to use | MIT License**
+**Free to use · MIT License · ใช้งานฟรี**
 
 ```
  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -23,24 +23,7 @@ See who's using your ports — kill them if you want
 
 ---
 
-## 🇹🇭 ภาษาไทย
-
-เครื่องมือเช็คพอร์ตสำหรับ Windows บอกให้รู้ว่า **โปรแกรมไหนใช้พอร์ตอะไรอยู่**  
-แค่เปิด `port-check.exe` — ไม่ต้องติดตั้งอะไร
-
-**วิธีใช้**
-
-| การทำงาน | วิธีทำ |
-|-----------|--------|
-| ดูทุกพอร์ต | เปิดโปรแกรมเลย |
-| ค้นหาเฉพาะพอร์ต | พิมพ์เลขพอร์ต → กด Enter หรือ Filter |
-| ดูหน่วยความจำ | คอลัมน์ Mem(MB) แสดง RAM ที่ใช้ |
-| ดูซีพียู | คอลัมน์ CPU% แบบ real-time |
-| รู้ว่า exe อยู่ไหน | คอลัมน์ Path บอกตำแหน่งไฟล์ |
-| ฆ่าโปรแกรม | เลือกแถว → กด Kill |
-| อัปเดตอัตโนมัติ | ทุก 5 วินาที หรือปิดได้ที่ Auto 5s |
-
-## 🌐 English
+## 🇬🇧 English
 
 ### Features
 
@@ -58,7 +41,7 @@ See who's using your ports — kill them if you want
 port-check.exe
 ```
 
-Just run it. No installation required. No dependencies.
+Just run it. No installation. No dependencies.
 
 ### Build
 
@@ -68,7 +51,39 @@ Requires .NET Framework 4.8+ and csc.exe.
 csc.exe /target:winexe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Management.dll port-check.cs
 ```
 
+---
+
+## 🇹🇭 ภาษาไทย
+
+### คุณสมบัติ
+
+- **รายการพอร์ต** — แสดงพอร์ต TCP และ UDP ทั้งหมด
+- **ค้นหา** — พิมพ์เลขพอร์ตเพื่อดูเฉพาะที่ต้องการ
+- **หน่วยความจำ** — ดูค่า RAM แบบ real-time ในคอลัมน์ Mem(MB)
+- **ซีพียู** — ดูค่า CPU % แบบ real-time
+- **ตำแหน่งไฟล์** — คอลัมน์ Path บอกว่า exe อยู่ที่ไหน
+- **ฆ่าโปรแกรม** — เลือกแถวแล้วกด Kill
+- **อัปเดตอัตโนมัติ** — ทุก 5 วินาที หรือปิดได้ที่ Auto 5s
+- **เรียงลำดับ** — คลิกหัวตารางเพื่อเรียงข้อมูล
+
+### วิธีใช้
+
+```
+port-check.exe
+```
+
+เปิดเลย ไม่ต้องติดตั้งอะไรเพิ่ม
+
+### สร้างจาก source
+
+ต้องมี .NET Framework 4.8+ และ csc.exe
+
+```powershell
+csc.exe /target:winexe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Management.dll port-check.cs
+```
+
+---
+
 ## 📄 License
 
-MIT — Free to use, modify, and distribute.  
-Full license in [LICENSE](LICENSE) file.
+MIT — Free to use, modify, and distribute. Full license in [LICENSE](LICENSE).
