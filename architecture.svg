@@ -39,39 +39,39 @@
 
   <!-- ==================== ROW 1 ==================== -->
   <rect x="52" y="76" width="178" height="58" class="box"/>
-  <text x="141" y="103" class="t2" text-anchor="middle">คุณ</text>
-  <text x="141" y="123" class="t3" text-anchor="middle">รัน port-check.exe</text>
+  <text x="141" y="103" class="t2" text-anchor="middle">You</text>
+  <text x="141" y="123" class="t3" text-anchor="middle">run port-check.exe</text>
 
   <rect x="322" y="76" width="178" height="58" class="app"/>
   <text x="411" y="103" class="t2" text-anchor="middle">Port Checker</text>
-  <text x="411" y="123" class="t3" text-anchor="middle">แสดงทุกอย่างบนหน้าจอ</text>
+  <text x="411" y="123" class="t3" text-anchor="middle">Shows everything on screen</text>
 
   <rect x="593" y="76" width="160" height="58" class="kill"/>
   <text x="673" y="103" class="t2" text-anchor="middle">Kill</text>
-  <text x="673" y="123" class="t3" text-anchor="middle">คลิกเพื่อปิดโปรเซส</text>
+  <text x="673" y="123" class="t3" text-anchor="middle">Click to terminate</text>
 
   <!-- ==================== ROW 2 ==================== -->
   <rect x="52" y="228" width="178" height="58" class="data"/>
   <text x="141" y="255" class="t2" text-anchor="middle">netstat -ano</text>
-  <text x="141" y="275" class="t3" text-anchor="middle">สแกนพอร์ต</text>
+  <text x="141" y="275" class="t3" text-anchor="middle">Scans ports</text>
 
   <rect x="322" y="228" width="178" height="58" class="app"/>
   <text x="411" y="255" class="t2" text-anchor="middle">Process API</text>
-  <text x="411" y="275" class="t3" text-anchor="middle">ชื่อ แรม ซีพียู</text>
+  <text x="411" y="275" class="t3" text-anchor="middle">Name, memory, CPU</text>
 
   <rect x="593" y="228" width="160" height="58" class="box"/>
   <text x="673" y="255" class="t2" text-anchor="middle">System</text>
-  <text x="673" y="275" class="t3" text-anchor="middle">โปรเซสที่รันอยู่</text>
+  <text x="673" y="275" class="t3" text-anchor="middle">Running processes</text>
 
   <!-- ==================== ROW 3 ==================== -->
   <rect x="140" y="368" width="520" height="82" class="app"/>
-  <text x="400" y="396" class="t2" text-anchor="middle">ตารางแสดงพอร์ตทั้งหมด</text>
+  <text x="400" y="396" class="t2" text-anchor="middle">You see all ports in a table</text>
   <text x="400" y="417" class="t3" text-anchor="middle">Port │ PID │ Name │ Mem │ CPU │ Path</text>
-  <text x="400" y="438" class="t3" text-anchor="middle">เรียง กรอง ส่งออก — แบบเรียลไทม์</text>
+  <text x="400" y="438" class="t3" text-anchor="middle">Sort, filter, export — all in real-time</text>
 
   <!-- Flow labels -->
-  <text x="276" y="97" class="t3" text-anchor="middle">เปิด</text>
-  <text x="549" y="97" class="t3" text-anchor="middle">ปิด</text>
+  <text x="276" y="97" class="t3" text-anchor="middle">opens</text>
+  <text x="549" y="97" class="t3" text-anchor="middle">kills</text>
   <text x="276" y="249" class="t3" text-anchor="middle">PID</text>
-  <text x="549" y="249" class="t3" text-anchor="middle">สอบถาม</text>
+  <text x="549" y="249" class="t3" text-anchor="middle">queries</text>
 </svg>
