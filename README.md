@@ -18,16 +18,16 @@
 </div>
 
 ```
- ┌───────────────────────────────────────────────────────────────────────────────────────┐
- │ Port: [____] Name: [_______]  [Refresh] [Kill] ☑ Auto 5s  23 con | 5 proc | 180 MB   │
- ├──────┬──────┬─────────┬───────┬───────┬──────────────┬───────┬────────────────────────┤
- │ Port │ PID  │ Name    │ Proto │ State │ Remote       │  Mem  │ Path                   │
- ├──────┼──────┼─────────┼───────┼───────┼──────────────┼───────┼────────────────────────┤
- │ 3000 │ 4404 │ node    │ TCP   │ Listen│ 0.0.0.0:0    │ 42.3  │ C:\Program Files\...   │
- │ 9229 │ 4404 │ node    │ TCP   │ Listen│ 0.0.0.0:0    │ 42.3  │ C:\Program Files\...   │
- │ 5040 │ 7528 │ svchost │ TCP   │ Listen│ 0.0.0.0:0    │ 15.6  │ C:\Windows\System32\   │
- │ 5353 │ 2032 │ svchost │ UDP   │ UDP   │ *:*          │ 14.3  │ C:\Windows\System32\   │
- └──────┴──────┴─────────┴───────┴───────┴──────────────┴───────┴────────────────────────┘
+ ┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+ │ Port: [____] Name: [_______]  [Refresh] [Kill] ☑ Auto 5s [Export]  23 con | 5 proc | 180 MB │
+ ├──────┬──────┬─────────┬───────┬───────┬──────────────┬───────┬──────┬────────────────────────┤
+ │ Port │ PID  │ Name    │ Proto │ State │ Remote       │  Mem  │ CPU% │ Path                   │
+ ├──────┼──────┼─────────┼───────┼───────┼──────────────┼───────┼──────┼────────────────────────┤
+ │ 3000 │ 4404 │ node    │ TCP   │ Listen│ 0.0.0.0:0    │ 42.3  │ 2.1  │ C:\Program Files\...   │
+ │ 9229 │ 4404 │ node    │ TCP   │ Listen│ 0.0.0.0:0    │ 42.3  │ 0.0  │ C:\Program Files\...   │
+ │ 5040 │ 7528 │ svchost │ TCP   │ Listen│ 0.0.0.0:0    │ 15.6  │ 0.1  │ C:\Windows\System32\   │
+ │ 5353 │ 2032 │ svchost │ UDP   │ UDP   │ *:*          │ 14.3  │ 0.0  │ C:\Windows\System32\   │
+ └──────┴──────┴─────────┴───────┴───────┴──────────────┴───────┴──────┴────────────────────────┘
 ```
 
 <br>
@@ -69,7 +69,7 @@ Or pass the port as a CLI argument:
 port-check.exe 3000
 ```
 
-Works on **Windows 10 / 11**. Single `.exe`, **14 KB**.
+Works on **Windows 10 / 11**. Single `.exe`, **22 KB**.
 
 ---
 
@@ -85,6 +85,7 @@ Works on **Windows 10 / 11**. Single `.exe`, **14 KB**.
 | No remote address | Remote Address column |
 | Need admin for some flags | No admin rights required |
 | Can't customize columns | Show/hide any column (right-click header) |
+| No export | Export to CSV with Save dialog |
 | Text scrolls away | Stays in view, updates in-place |
 
 ---
@@ -104,7 +105,8 @@ Works on **Windows 10 / 11**. Single `.exe`, **14 KB**.
 | **Remote Address** | See where each connection goes |
 | **Show/hide columns** | Right-click column header → toggle visibility |
 | **Settings** | Remembers port filter, name filter, window size between sessions |
-| **Portable** | Single `.exe`, no dependencies, 14 KB |
+| **Export CSV** | Save currently filtered/sorted data to file |
+| **Portable** | Single `.exe`, no dependencies, 22 KB |
 | **Zero config** | Download → run. That's it |
 
 ---
