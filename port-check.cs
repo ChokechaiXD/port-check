@@ -100,12 +100,15 @@ namespace PortChecker
             autoRefresh.Text = "Auto 5s"; autoRefresh.Location = new Point(430, 8); autoRefresh.Size = new Size(80, 20);
             autoRefresh.Checked = true;
 
-            statusBar.Location = new Point(520, 10); statusBar.Size = new Size(620, 20);
+            var exportButton = new Button { Text = "Export", Location = new Point(515, 6), Size = new Size(70, 25) };
+            exportButton.Click += (_, __) => ExportCsv();
+
+            statusBar.Location = new Point(595, 10); statusBar.Size = new Size(550, 20);
             statusBar.ForeColor = Color.Gray;
 
             toolbar.Controls.AddRange(new Control[] {
                 portLabel, portFilter, nameLabel, nameFilter,
-                refreshButton, killButton, autoRefresh, statusBar
+                refreshButton, killButton, autoRefresh, exportButton, statusBar
             });
 
             table.Location = new Point(15, 55); table.Size = new Size(1160, 490);
@@ -279,8 +282,23 @@ namespace PortChecker
             string msg = "Kill " + name + " (PID:" + pid + ") on port " + port + "?";
             if (MessageBox.Show(msg, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
-            try { Process.GetProcessById(pid).Kill(); statusBar.Text = "Killed " + name; RefreshData(); }
-            catch (Exception ex) { MessageBox.Show(ex.Message, "", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            try
+            {
+                Process.GetProcessById(pid).Kill();
+                statusBar.Text = "Killed " + name;
+                RefreshData();
+            }
+            catch (Exception ex)
+            {
+                string hint = "";
+                string lowerMsg = ex.Message.ToLowerInvariant();
+                if (lowerMsg.Contains("access")) hint = "\n\nTip: Run the app as Administrator for this process.";
+                else if (lowerMsg.Contains("already exited") || lowerMsg.Contains("not found"))
+                    hint = "\n\nNote: Process already exited.";
+
+                MessageBox.Show("Failed to kill " + name + " (PID:" + pid + ")." + hint,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         void CopyCell(int col)
@@ -303,6 +321,30 @@ namespace PortChecker
             foreach (object v in data[i])
                 sb.Append(v != null ? v.ToString() : "-").Append("\t");
             Clipboard.SetText(sb.ToString().TrimEnd('\t'));
+        }
+
+        void ExportCsv()
+        {
+            if (data.Count == 0) { statusBar.Text = "Nothing to export."; return; }
+            var dlg = new SaveFileDialog { Filter = "CSV files|*.csv", FileName = "ports.csv" };
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            var sb = new StringBuilder();
+            sb.AppendLine("Port,PID,Name,Proto,State,Remote,MemMB,CpuPct,Path");
+            foreach (var row in data)
+            {
+                for (int i = 0; i < row.Length; i++)
+                {
+                    if (i > 0) sb.Append(',');
+                    object v = row[i];
+                    string s = v != null ? v.ToString() : "";
+                    if (s.Contains(",") || s.Contains("\""))
+                        s = "\"" + s.Replace("\"", "\"\"") + "\"";
+                    sb.Append(s);
+                }
+                sb.AppendLine();
+            }
+            File.WriteAllText(dlg.FileName, sb.ToString());
+            statusBar.Text = "Exported " + data.Count + " rows to " + Path.GetFileName(dlg.FileName);
         }
 
         void RefreshData()

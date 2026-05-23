@@ -50,6 +50,10 @@ taskkill /PID 4404             # kill it
 
 **Port Checker** does all of that in one GUI. Type the port → press Kill → done.
 
+<p align="center">
+  <img src="architecture.svg" alt="Port Checker Architecture" width="700">
+</p>
+
 ---
 
 ## Quick Start

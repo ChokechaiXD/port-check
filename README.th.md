@@ -50,6 +50,10 @@ taskkill /PID 4404             # ฆ่าทิ้ง
 
 **Port Checker** รวมสามขั้นตอนเป็น GUI เดียว — พิมพ์พอร์ต → กด Kill → จบ
 
+<p align="center">
+  <img src="architecture.svg" alt="Port Checker Architecture" width="700">
+</p>
+
 ---
 
 ## เริ่มต้นใช้
