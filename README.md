@@ -1,6 +1,9 @@
 # 🔌 Port Checker
 
-See who's using your ports — kill them if you want
+See who's using your ports — kill them if you want  
+ดูว่าใครใช้พอร์ตอะไรอยู่ — ฆ่าทิ้งได้ถ้ากวน
+
+**ใช้งานฟรี ไม่มีค่าใช้จ่าย | Free to use | MIT License**
 
 ```
  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -18,7 +21,28 @@ See who's using your ports — kill them if you want
  └──────┴──────┴─────────────┴───────┴───────┴─────────┴───────┴──────────────────────────────────┘
 ```
 
-## Features
+---
+
+## 🇹🇭 ภาษาไทย
+
+เครื่องมือเช็คพอร์ตสำหรับ Windows บอกให้รู้ว่า **โปรแกรมไหนใช้พอร์ตอะไรอยู่**  
+แค่เปิด `port-check.exe` — ไม่ต้องติดตั้งอะไร
+
+**วิธีใช้**
+
+| การทำงาน | วิธีทำ |
+|-----------|--------|
+| ดูทุกพอร์ต | เปิดโปรแกรมเลย |
+| ค้นหาเฉพาะพอร์ต | พิมพ์เลขพอร์ต → กด Enter หรือ Filter |
+| ดูหน่วยความจำ | คอลัมน์ Mem(MB) แสดง RAM ที่ใช้ |
+| ดูซีพียู | คอลัมน์ CPU% แบบ real-time |
+| รู้ว่า exe อยู่ไหน | คอลัมน์ Path บอกตำแหน่งไฟล์ |
+| ฆ่าโปรแกรม | เลือกแถว → กด Kill |
+| อัปเดตอัตโนมัติ | ทุก 5 วินาที หรือปิดได้ที่ Auto 5s |
+
+## 🌐 English
+
+### Features
 
 - **Port List** — Shows all TCP & UDP listening ports
 - **Filter** — Type a port number to focus on one service
@@ -28,7 +52,7 @@ See who's using your ports — kill them if you want
 - **Auto-refresh** — Updates every 5 seconds, toggle on/off
 - **Sort** — Click any column header to sort
 
-## Usage
+### Usage
 
 ```
 port-check.exe
@@ -36,7 +60,7 @@ port-check.exe
 
 Just run it. No installation required. No dependencies.
 
-## Build
+### Build
 
 Requires .NET Framework 4.8+ and csc.exe.
 
@@ -44,6 +68,7 @@ Requires .NET Framework 4.8+ and csc.exe.
 csc.exe /target:winexe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Management.dll port-check.cs
 ```
 
-## License
+## 📄 License
 
-MIT
+MIT — Free to use, modify, and distribute.  
+Full license in [LICENSE](LICENSE) file.
