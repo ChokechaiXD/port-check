@@ -148,5 +148,5 @@ PRs welcome. Open an issue first for bigger changes.
 ---
 
 <div align="center">
-  <small>MIT Licensed · Free to use · Built with C# WinForms</small>
+  <small>GPLv3 Licensed · Free to use · Built with C# WinForms</small>
 </div>
