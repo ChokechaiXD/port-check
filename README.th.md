@@ -1,8 +1,7 @@
 <div align="center">
   <br>
   <h1>🔌 Port Checker</h1>
-  <p><strong>เครื่องมือจัดการพอร์ตและโปรเซสสำหรับ Windows</strong></p>
-  <p><em>ดูว่าใครใช้พอร์ตอะไรอยู่ — ฆ่าทิ้งได้ถ้ากวน</em></p>
+  <p><strong>จบปัญหา "port already in use" — คลิกเดียว ไม่ต้องเปิด CMD</strong></p>
   <br>
   <p>
     <a href="https://github.com/ChokechaiXD/port-check/releases">
@@ -19,121 +18,126 @@
 </div>
 
 ```
- ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
- │ Port: [_____] [Refresh] [Kill] ☐ Auto 5s        23 connection(s)  |  14:30:00                  │
- ├──────┬──────┬─────────────┬───────┬───────┬─────────┬───────┬───────────────────────────────────┤
- │ Port │ PID  │ Name        │ Proto │ State │ Mem(MB) │ CPU%  │ Path                              │
- ├──────┼──────┼─────────────┼───────┼───────┼─────────┼───────┼───────────────────────────────────┤
- │  135 │ 1172 │ svchost     │ TCP   │ Listen│  13.1   │  0.0  │ C:\Windows\System32\svchost.exe   │
- │  139 │    4 │ System      │ TCP   │ Listen│   2.5   │   -   │ C:\Windows\System32\ntoskrnl.exe  │
- │  445 │    4 │ System      │ TCP   │ Listen│   2.5   │   -   │ C:\Windows\System32\ntoskrnl.exe  │
- │ 5040 │ 7528 │ svchost     │ TCP   │ Listen│  15.6   │  0.1  │ C:\Windows\System32\svchost.exe   │
- │ 5353 │ 2032 │ svchost     │ UDP   │ UDP   │  14.3   │  0.0  │ C:\Windows\System32\svchost.exe   │
- │ 5354 │ 2772 │ svchost     │ UDP   │ UDP   │  13.6   │  0.0  │ C:\Windows\System32\svchost.exe   │
- │ 9000 │ 4404 │ node        │ TCP   │ Listen│  42.3   │  2.1  │ C:\Program Files\node\node.exe    │
- └──────┴──────┴─────────────┴───────┴───────┴─────────┴───────┴───────────────────────────────────┘
+ ┌───────────────────────────────────────────────────────────────────────────────────────┐
+ │ Port: [____] Name: [_______]  [Refresh] [Kill] ☑ Auto 5s  23 con | 5 proc | 180 MB  │
+ ├──────┬──────┬─────────┬───────┬───────┬──────────────┬───────┬────────────────────────┤
+ │ Port │ PID  │ Name    │ Proto │ State │ Remote       │  Mem  │ Path                   │
+ ├──────┼──────┼─────────┼───────┼───────┼──────────────┼───────┼────────────────────────┤
+ │ 3000 │ 4404 │ node    │ TCP   │ Listen│ 0.0.0.0:0    │ 42.3  │ C:\Program Files\...   │
+ │ 9229 │ 4404 │ node    │ TCP   │ Listen│ 0.0.0.0:0    │ 42.3  │ C:\Program Files\...   │
+ │ 5040 │ 7528 │ svchost │ TCP   │ Listen│ 0.0.0.0:0    │ 15.6  │ C:\Windows\System32\  │
+ │ 5353 │ 2032 │ svchost │ UDP   │ UDP   │ *:*          │ 14.3  │ C:\Windows\System32\  │
+ └──────┴──────┴─────────┴───────┴───────┴──────────────┴───────┴────────────────────────┘
 ```
 
 <br>
 
-> **Port Checker** เป็นโปรแกรม Windows ขนาดเล็กที่ใช้ดูว่าพอร์ตไหนกำลังถูกโปรแกรมอะไรใช้อยู่ พร้อมดูการใช้ RAM, CPU และตำแหน่งไฟล์แบบ real-time  
-> ดาวน์โหลดได้ที่ [latest release](https://github.com/ChokechaiXD/port-check/releases) — ไฟล์ `.exe` เดียว ไม่ต้องติดตั้ง
+## ปัญหาที่แก้
 
-ใช้ได้บน **Windows 10 / 11** สร้างด้วย **C# WinForms (.NET Framework 4.8+)**
+กำลังจะรัน dev server แล้วเจอ:
+
+```
+Error: listen EADDRINUSE: address already in use :::3000
+```
+
+วิธีเดิม:
+
+```bash
+netstat -ano | findstr :3000  # หาพอร์ต
+tasklist /FI "PID eq 4404"     # หาว่าโปรแกรมอะไร
+taskkill /PID 4404             # ฆ่าทิ้ง
+```
+
+**Port Checker** รวมสามขั้นตอนเป็น GUI เดียว — พิมพ์พอร์ต → กด Kill → จบ
 
 ---
 
-## 🔧 ติดตั้ง
+## เริ่มต้นใช้
 
+1. ดาวน์โหลด [`port-check.exe`](https://github.com/ChokechaiXD/port-check/releases)
+2. เปิดเลย — ไม่ต้องติดตั้ง ไม่ต้องสิทธิ์ Admin
+3. พิมพ์ `3000` → Enter → รู้ทันทีว่าใครใช้พอร์ต 3000
+4. เลือกแถว → กด **Kill** → เสร็จ
+
+หรือใส่พอร์ตตอนรันเลย:
+
+```bash
+port-check.exe 3000
 ```
-ดาวน์โหลด port-check.exe จาก Releases → เปิดใช้เลย
-```
 
-ไม่ต้องติดตั้งอะไร ไม่ต้องใช้ npm ไม่มี config
+ใช้ได้บน **Windows 10 / 11** ไฟล์ `.exe` เดียว **14 KB**
 
-หรือสร้างจาก source:
+---
+
+## ทำไมไม่ใช้ netstat อย่างเดียว?
+
+| netstat (CMD) | Port Checker |
+|---------------|--------------|
+| ข้อความดิบ อ่านยาก | ตาราง sortable คลิกหัวคอลัมน์เรียงได้ |
+| ไม่ auto-refresh | รีเฟรชอัตโนมัติทุก 5 วิ (เปิด/ปิดได้) |
+| ฆ่าไม่ได้ แค่บอก PID | ปุ่ม Kill + ยืนยันอีกครั้ง |
+| ไม่มีข้อมูล RAM/CPU | RAM และ CPU% แบบ real-time |
+| filter ด้วย `findstr` เท่านั้น | ค้นหาตามพอร์ต + ค้นหาตามชื่อ process |
+| ไม่มี Remote Address | มีคอลัมน์ Remote Address |
+| บาง flag ต้อง Admin | **ไม่ต้องใช้ Admin** |
+| ปรับแต่งคอลัมน์ไม่ได้ | ซ่อน/แสดงคอลัมน์ได้ (คลิกขวาที่หัวตาราง) |
+| ข้อความเลื่อนหาย | ตารางอยู่กับที่ อัปเดต in-place |
+
+---
+
+## คุณสมบัติ
+
+| หมวด | รายละเอียด |
+|------|-----------|
+| **สแกนพอร์ต** | TCP + UDP ผ่าน `netstat -ano` ไม่ต้อง Admin |
+| **ข้อมูล real-time** | RAM (MB), CPU% แบบ TotalProcessorTime differential |
+| **ข้อมูล process** | ชื่อ, PID, ที่อยู่ไฟล์ .exe |
+| **ค้นหา** | ตามพอร์ต หรือตามชื่อ process |
+| **ฆ่า process** | คลิกเดียว + ยืนยัน (หรือกด K / Del หรือดับเบิลคลิก) |
+| **คัดลอก** | คลิกขวา: คัดลอก Port / PID / Name / Remote / Path หรือทั้งแถว (Ctrl+C) |
+| **เรียงลำดับ** | คลิกหัวคอลัมน์ — เรียงตัวเลขได้ กลับลำดับได้ |
+| **รีเฟรชอัตโนมัติ** | เปิด/ปิดได้ อัปเดตทุก 5 วิ ไม่กระพริบ |
+| **Remote Address** | ดูว่าการเชื่อมต่อนี้ไปไหน |
+| **ซ่อน/แสดงคอลัมน์** | คลิกขวาที่หัวตาราง → เลือกแสดงหรือซ่อน |
+| **จำค่าต่างๆ** | จำ port filter, name filter, ขนาดหน้าต่าง |
+| **พกพา** | .exe เดียว ไม่มี dependencies 14 KB |
+| **ไม่ต้องตั้งค่า** | ดาวน์โหลด → เปิดใช้เลย |
+
+---
+
+## หลักการทำงาน
+
+Port Checker ใช้คำสั่ง `netstat -ano` ที่ Windows มีอยู่แล้ว — คำสั่งเดียวกับที่พิมพ์ใน CMD — แต่เอาข้อมูลมาแสดงใน UI ที่ใช้งานง่าย:
+
+- แหล่งข้อมูล: `netstat -ano` (ไม่ต้องใช้สิทธิ์พิเศษ)
+- RAM: Process.WorkingSet64
+- CPU: Process.TotalProcessorTime differential (ไม่ต้องใช้ WMI)
+- ค้นหาและเรียงลำดับแบบ real-time ในเครื่อง
+
+---
+
+## Build จาก source
 
 ```powershell
-csc.exe /target:winexe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Management.dll port-check.cs
+csc.exe /target:winexe /win32icon:port-check.ico ^
+  /reference:System.Windows.Forms.dll ^
+  /reference:System.Drawing.dll ^
+  port-check.cs
 ```
+
+ต้องมี .NET Framework 4.8+ (มีอยู่ใน Windows 10/11 อยู่แล้ว)
 
 ---
 
-## 🚀 เริ่มต้นใช้งาน
+## ร่วมพัฒนา
 
-```
-port-check.exe
-```
-
-เปิดมาแล้วจะเห็นพอร์ตทั้งหมดที่กำลังใช้งาน
-
-### ค้นหาตามพอร์ต
-
-พิมพ์เลขพอร์ตแล้วกด Enter:
-
-```
-พิมพ์ "3000" → ตารางจะแสดงเฉพาะพอร์ต 3000
-กด Enter หรือ Refresh เพื่อค้นหา
-```
-
-### ฆ่าโปรเซส
-
-เลือกแถวแล้วกด **Kill**:
-
-```
-เลือก node.exe บนพอร์ต 9000
-กด Kill → ยืนยัน → โปรเซสถูกปิด
-```
-
-### อัปเดตอัตโนมัติ
-
-เปิด/ปิดได้ที่ checkbox Auto-refresh อัปเดตทุก **5 วินาที**
+PR ยินดีต้อนรับ ถ้าจะแก้ใหญ่เปิด Issue ก่อนนะ
 
 ---
 
-## 📋 คุณสมบัติ
+## ภาษาอื่น
 
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="160"><b>📋 รายการพอร์ต</b><br><small>TCP & UDP</small></td>
-      <td align="center" width="160"><b>🔍 ค้นหา</b><br><small>ตามเลขพอร์ต</small></td>
-      <td align="center" width="160"><b>📊 ทรัพยากร</b><br><small>RAM & CPU %</small></td>
-      <td align="center" width="160"><b>📍 ตำแหน่ง</b><br><small>ที่อยู่ไฟล์ exe</small></td>
-    </tr>
-    <tr>
-      <td align="center" width="160"><b>💀 ฆ่า</b><br><small>คลิกเดียว</small></td>
-      <td align="center" width="160"><b>🔄 อัตโนมัติ</b><br><small>ทุก 5 วิ</small></td>
-      <td align="center" width="160"><b>↕️ เรียง</b><br><small>ทุกคอลัมน์</small></td>
-      <td align="center" width="160"><b>⚡ พกพา</b><br><small>ไฟล์ .exe เดียว</small></td>
-    </tr>
-  </table>
-</div>
-
----
-
-## 🖥️ หลักการทำงาน
-
-Port Checker ใช้คำสั่ง `netstat -ano` ของ Windows เพื่อดึงข้อมูลพอร์ต — ไม่ต้องใช้สิทธิ์ Admin:
-
-- สแกนพอร์ต TCP และ UDP ทั้งหมด
-- จับคู่พอร์ตกับโปรเซสที่เป็นเจ้าของ (PID)
-- อ่านค่า **หน่วยความจำ** และ **CPU %** แบบ real-time ผ่าน WMI
-- หาตำแหน่ง **ไฟล์ .exe** ของแต่ละโปรเซส
-
-ตารางอัปเดตแบบ in-place — ไม่กระพริบ ไม่สะดุด
-
----
-
-## 🤝 ร่วมพัฒนา
-
-PR ยินดีต้อนรับ Fork → เขียนโค้ด → PR
-
----
-
-## 📖 ภาษาอื่น
-
-- [🇬🇧 English — Read in English](README.md)
+- [🇬🇧 English](README.md)
 
 ---
 

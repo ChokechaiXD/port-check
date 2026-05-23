@@ -1,8 +1,7 @@
 <div align="center">
   <br>
   <h1>🔌 Port Checker</h1>
-  <p><strong>Runtime Port & Process Manager for Windows</strong></p>
-  <p><em>See who's using your ports — kill them if you want</em></p>
+  <p><strong>The "port already in use" fixer — one click, no terminal</strong></p>
   <br>
   <p>
     <a href="https://github.com/ChokechaiXD/port-check/releases">
@@ -19,121 +18,126 @@
 </div>
 
 ```
- ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
- │ Port: [_____] [Refresh] [Kill] ☐ Auto 5s        23 connection(s)  |  14:30:00                  │
- ├──────┬──────┬─────────────┬───────┬───────┬─────────┬───────┬───────────────────────────────────┤
- │ Port │ PID  │ Name        │ Proto │ State │ Mem(MB) │ CPU%  │ Path                              │
- ├──────┼──────┼─────────────┼───────┼───────┼─────────┼───────┼───────────────────────────────────┤
- │  135 │ 1172 │ svchost     │ TCP   │ Listen│  13.1   │  0.0  │ C:\Windows\System32\svchost.exe   │
- │  139 │    4 │ System      │ TCP   │ Listen│   2.5   │   -   │ C:\Windows\System32\ntoskrnl.exe  │
- │  445 │    4 │ System      │ TCP   │ Listen│   2.5   │   -   │ C:\Windows\System32\ntoskrnl.exe  │
- │ 5040 │ 7528 │ svchost     │ TCP   │ Listen│  15.6   │  0.1  │ C:\Windows\System32\svchost.exe   │
- │ 5353 │ 2032 │ svchost     │ UDP   │ UDP   │  14.3   │  0.0  │ C:\Windows\System32\svchost.exe   │
- │ 5354 │ 2772 │ svchost     │ UDP   │ UDP   │  13.6   │  0.0  │ C:\Windows\System32\svchost.exe   │
- │ 9000 │ 4404 │ node        │ TCP   │ Listen│  42.3   │  2.1  │ C:\Program Files\node\node.exe    │
- └──────┴──────┴─────────────┴───────┴───────┴─────────┴───────┴───────────────────────────────────┘
+ ┌───────────────────────────────────────────────────────────────────────────────────────┐
+ │ Port: [____] Name: [_______]  [Refresh] [Kill] ☑ Auto 5s  23 con | 5 proc | 180 MB  │
+ ├──────┬──────┬─────────┬───────┬───────┬──────────────┬───────┬────────────────────────┤
+ │ Port │ PID  │ Name    │ Proto │ State │ Remote       │  Mem  │ Path                   │
+ ├──────┼──────┼─────────┼───────┼───────┼──────────────┼───────┼────────────────────────┤
+ │ 3000 │ 4404 │ node    │ TCP   │ Listen│ 0.0.0.0:0    │ 42.3  │ C:\Program Files\...   │
+ │ 9229 │ 4404 │ node    │ TCP   │ Listen│ 0.0.0.0:0    │ 42.3  │ C:\Program Files\...   │
+ │ 5040 │ 7528 │ svchost │ TCP   │ Listen│ 0.0.0.0:0    │ 15.6  │ C:\Windows\System32\  │
+ │ 5353 │ 2032 │ svchost │ UDP   │ UDP   │ *:*          │ 14.3  │ C:\Windows\System32\  │
+ └──────┴──────┴─────────┴───────┴───────┴──────────────┴───────┴────────────────────────┘
 ```
 
 <br>
 
-> **Port Checker** is a lightweight Windows GUI tool that lists all listening TCP & UDP ports, their owning processes, real-time resource usage (Memory & CPU%), and executable paths.  
-> Download the [latest release](https://github.com/ChokechaiXD/port-check/releases) — single `.exe`, no install required.
+## Why
 
-Works on **Windows 10 / 11**. Built with **C# WinForms (.NET Framework 4.8+)**.
+You're about to start your dev server and get this:
+
+```
+Error: listen EADDRINUSE: address already in use :::3000
+```
+
+The old way:
+
+```bash
+netstat -ano | findstr :3000  # find the port
+tasklist /FI "PID eq 4404"     # find what process
+taskkill /PID 4404             # kill it
+```
+
+**Port Checker** does all of that in one GUI. Type the port → press Kill → done.
 
 ---
 
-## 🔧 Install
+## Quick Start
 
+1. Download [`port-check.exe`](https://github.com/ChokechaiXD/port-check/releases)
+2. Run it — no install, no admin rights needed
+3. Type `3000` → hit Enter → see who owns port 3000
+4. Select the row → click **Kill** → done
+
+Or pass the port as a CLI argument:
+
+```bash
+port-check.exe 3000
 ```
-Download port-check.exe from Releases → run it
-```
 
-No dependencies. No npm. No config.
+Works on **Windows 10 / 11**. Single `.exe`, **14 KB**.
 
-Or build from source:
+---
+
+## Why a GUI instead of netstat?
+
+| netstat (cmd) | Port Checker |
+|---------------|--------------|
+| Raw text, hard to scan | Sortable table, click any header |
+| No auto-refresh | Auto-refresh every 5s (toggle) |
+| Can't kill, just shows PID | Kill button + confirm dialog |
+| No memory or CPU info | Real-time RAM & CPU% per process |
+| Filter by `findstr` only | Port filter + Name search |
+| No remote address | Remote Address column |
+| Need admin for some flags | No admin rights required |
+| Can't customize columns | Show/hide any column (right-click header) |
+| Text scrolls away | Stays in view, updates in-place |
+
+---
+
+## Features
+
+| Category | Details |
+|----------|---------|
+| **Port scanning** | TCP + UDP via `netstat -ano` — no admin needed |
+| **Real-time data** | RAM (MB), CPU% via TotalProcessorTime differential |
+| **Process info** | Name, PID, executable path |
+| **Filter** | By port number or process name |
+| **Kill** | One-click with confirmation (or K / Del key, or double-click) |
+| **Copy** | Right-click: copy Port / PID / Name / Remote / Path or whole row (Ctrl+C) |
+| **Sort** | Click any column header — numeric-aware, asc/desc toggle |
+| **Auto-refresh** | Toggle on/off, updates in-place every 5s — no flicker |
+| **Remote Address** | See where each connection goes |
+| **Show/hide columns** | Right-click column header → toggle visibility |
+| **Settings** | Remembers port filter, name filter, window size between sessions |
+| **Portable** | Single `.exe`, no dependencies, 14 KB |
+| **Zero config** | Download → run. That's it |
+
+---
+
+## How it works
+
+Port Checker uses Windows' built-in `netstat -ano` — the same command you'd type manually — and wraps it in a proper UI. No elevated privileges, no background services, no external dependencies.
+
+- Data source: `netstat -ano` (zero-permission port info)
+- Memory: Process.WorkingSet64
+- CPU: Process.TotalProcessorTime differential (no WMI needed)
+- Filtering & sorting done client-side in real-time
+
+---
+
+## Build from source
 
 ```powershell
-csc.exe /target:winexe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.Management.dll port-check.cs
+csc.exe /target:winexe /win32icon:port-check.ico ^
+  /reference:System.Windows.Forms.dll ^
+  /reference:System.Drawing.dll ^
+  port-check.cs
 ```
+
+Requires .NET Framework 4.8+ (built into Windows 10/11).
 
 ---
 
-## 🚀 Quick Start
+## Contributing
 
-```
-port-check.exe
-```
-
-The GUI opens and immediately shows all listening ports.
-
-### Filter by port
-
-Type a port number and press Enter:
-
-```
-Type "3000" → grid filters to only port 3000
-Press Enter or click "Refresh" to apply
-```
-
-### Kill a process
-
-Select a row and click **Kill**:
-
-```
-Select node.exe on port 9000
-Click Kill → confirm → process terminated
-```
-
-### Auto-refresh
-
-Toggle auto-refresh on/off with the checkbox. Updates every **5 seconds** by default.
+PRs welcome. Open an issue first for bigger changes.
 
 ---
 
-## 📋 Features
+## Languages
 
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="160"><b>📋 Port List</b><br><small>TCP & UDP</small></td>
-      <td align="center" width="160"><b>🔍 Filter</b><br><small>By port number</small></td>
-      <td align="center" width="160"><b>📊 Resources</b><br><small>RAM & CPU %</small></td>
-      <td align="center" width="160"><b>📍 Path</b><br><small>Exe location</small></td>
-    </tr>
-    <tr>
-      <td align="center" width="160"><b>💀 Kill</b><br><small>One-click</small></td>
-      <td align="center" width="160"><b>🔄 Auto-refresh</b><br><small>Every 5s</small></td>
-      <td align="center" width="160"><b>↕️ Sort</b><br><small>Any column</small></td>
-      <td align="center" width="160"><b>⚡ Portable</b><br><small>Single .exe</small></td>
-    </tr>
-  </table>
-</div>
-
----
-
-## 🖥️ How it works
-
-Port Checker uses Windows built-in **`netstat -ano`** to gather connection data — no admin rights needed, no external dependencies:
-
-- Scans all TCP/UDP listening ports
-- Maps each port to its owning process (PID)
-- Reads real-time **Memory (Working Set)** and **CPU %** via WMI
-- Resolves the full **executable path** for each process
-
-The table updates in-place every refresh — no flicker, no flash.
-
----
-
-## 🤝 Contributing
-
-PRs welcome. Fork → code → PR.
-
----
-
-## 📖 Languages
-
-- [🇹🇭 ภาษาไทย — อ่านได้ที่นี่](README.th.md)
+- [🇹🇭 ภาษาไทย](README.th.md)
 
 ---
 
